@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-google_oauth_secrets = st.secrets('google_oauth')
+google_oauth_secrets = st.secrets['google_oauth']
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = "1-hV-sXs0UtHTfpA2LkF52N94HoCqtXmeObGQGu3esok"
