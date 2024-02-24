@@ -1,73 +1,91 @@
 import os
 
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
+# from google.auth.transport.requests import Request
+# from google.oauth2.credentials import Credentials
+# from google_auth_oauthlib.flow import InstalledAppFlow
+# from googleapiclient.discovery import build
+# from googleapiclient.errors import HttpError
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sqlalchemy import create_engine
 import streamlit as st
 
-google_oauth_secrets = st.secrets['google_oauth']
+connection_string = f"mysql+mysqlconnector://{os.environ['PS_USER']}:{os.environ['PS_PASS']}@{os.environ['PS_HOST']}:3306/{os.environ['PS_DATABASE']}"
+engine = create_engine(connection_string)
 
-# The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = "1-hV-sXs0UtHTfpA2LkF52N94HoCqtXmeObGQGu3esok"
-SAMPLE_RANGE_NAME = "Sheet1!A1:E"
+# scores['Date'] = pd.to_datetime(scores['Date'])
 
-# If modifying these scopes, delete the file token.json.
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+# scores.rename({col : col.lower() for col in scores.columns}, axis = 1, inplace = True)
 
-creds = None
+# print(scores)
 
-if not creds or not creds.valid:
-    
-    if creds and creds.expired and creds.refresh_token:
-    
-        creds.refresh(Request())
-    
-    else:
+scores = pd.read_sql('select * from bowling.league', engine)
+# scores.to_sql('league',con = engine, index = False, if_exists = 'replace')
 
-        client_config = {'web' : {'client_id' : google_oauth_secrets['client_id'],
-                                  'client_secret' : google_oauth_secrets['client_secret']}}
+# print(scores)
+
+# google_oauth_secrets = st.secrets['google_oauth']
+
+# # The ID and range of a sample spreadsheet.
+# SAMPLE_SPREADSHEET_ID = "1-hV-sXs0UtHTfpA2LkF52N94HoCqtXmeObGQGu3esok"
+# SAMPLE_RANGE_NAME = "Sheet1!A1:E"
+
+# # If modifying these scopes, delete the file token.json.
+# SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+
+# creds = None
+
+# if not creds or not creds.valid:
     
-        # flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-        flow = InstalledAppFlow.from_client_config(client_config = client_config, scopes = SCOPES)
-        creds = flow.run_local_server(port=0)
+#     if creds and creds.expired and creds.refresh_token:
     
-    # Save the credentials for the next run
-    with open("token.json", "w") as token:
+#         creds.refresh(Request())
+    
+#     else:
+
+#         client_config = {'web' : {'client_id' : google_oauth_secrets['client_id'],
+#                                   'client_secret' : google_oauth_secrets['client_secret']}}
+    
+#         # flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+#         flow = InstalledAppFlow.from_client_config(client_config = client_config, scopes = SCOPES)
+#         creds = flow.run_local_server(port=0)
+    
+#     # Save the credentials for the next run
+#     with open("token.json", "w") as token:
         
-        token.write(creds.to_json())
+#         token.write(creds.to_json())
 
-    try:
-        service = build("sheets", "v4", credentials=creds)
+#     try:
+#         service = build("sheets", "v4", credentials=creds)
         
-        # Call the Sheets API
-        sheet = service.spreadsheets()
+#         # Call the Sheets API
+#         sheet = service.spreadsheets()
 
-        result = (
-            sheet.values()
-            .get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME)
-            .execute()
-        )
-        values = result.get("values", [])
+#         result = (
+#             sheet.values()
+#             .get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME)
+#             .execute()
+#         )
+#         values = result.get("values", [])
         
-        if not values:
+#         if not values:
 
-            print("No data found.")
+#             print("No data found.")
 
-        scores = pd.DataFrame(values[1:], columns = values[0])
+#         scores = pd.DataFrame(values[1:], columns = values[0])
 
-        scores['Date'] = pd.to_datetime(scores['Date'])
+#         scores['Date'] = pd.to_datetime(scores['Date'])
 
-        print(scores)
+#         print(scores)
 
-    except HttpError as err:
+#     except HttpError as err:
     
-        print(err)
+#         print(err)
 
+scores.rename({col : col.capitalize() for col in scores.columns}, axis = 1, inplace = True)
+
+#TODO uncomment this chunk
 scores['Date'] = pd.to_datetime(scores['Date'])
 scores['Score'] = [np.nan if pd.isna(score) else int(score) for score in scores['Score']]
 
