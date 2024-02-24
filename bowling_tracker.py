@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+google_oauth_secrets = st.secrets('google_oauth')
+
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = "1-hV-sXs0UtHTfpA2LkF52N94HoCqtXmeObGQGu3esok"
 SAMPLE_RANGE_NAME = "Sheet1!A1:E"
@@ -26,8 +28,12 @@ if not creds or not creds.valid:
         creds.refresh(Request())
     
     else:
+
+        client_config = {'web' : {'client_id' : google_oauth_secrets['client_id'],
+                                  'client_secret' : google_oauth_secrets['client_secret']}}
     
-        flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+        # flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+        flow = InstalledAppFlow.from_client_config(client_config = client_config, SCOPES)
         creds = flow.run_local_server(port=0)
     
     # Save the credentials for the next run
