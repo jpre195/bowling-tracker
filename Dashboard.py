@@ -23,6 +23,8 @@ engine = create_engine(connection_string)
 scores = pd.read_sql('select * from bowling.league', engine)
 # scores.to_sql('league',con = engine, index = False, if_exists = 'replace')
 
+st.session_state['scores'] = scores
+
 # print(scores)
 
 # google_oauth_secrets = st.secrets['google_oauth']
