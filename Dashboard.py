@@ -30,6 +30,8 @@ scores['Score'] = [np.nan if pd.isna(score) else int(score) for score in scores[
 scores_min = scores.pivot_table(values = 'Score', index = ['Date', 'Season', 'Week'], aggfunc = min)
 scores_avg = scores.pivot_table(values = 'Score', index = ['Date', 'Season', 'Week'], aggfunc = np.mean)
 scores_max = scores.pivot_table(values = 'Score', index = ['Date', 'Season', 'Week'], aggfunc = max)
+scores_series = scores.pivot_table(values = 'Score', index = ['Date', 'Season', 'Week'], aggfunc = sum)
+scores_games = scores.pivot_table(values = 'Score', index = ['Date', 'Season', 'Week'], aggfunc = 'count')
 
 #Rename score columns in each pivot table
 scores_min.rename({'Score' : 'Min Score'}, axis = 1, inplace = True)
@@ -44,14 +46,16 @@ scores_agg.reset_index(inplace = True)
 st.title('Bowling Tracker')
 
 #Show high game and current average
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 col1.metric('High Game', max(scores['Score']))
+
+col2.metric('High Series', max(scores.groupby('Week').sum()['Score']))
 
 previous_scores = scores[scores.Date < max(scores.Date)]
 delta = scores['Score'].mean() - previous_scores['Score'].mean()
 
-col2.metric('Average', round(scores['Score'].mean(), 1), delta = round(delta, 1))
+col3.metric('Average', round(scores['Score'].mean(), 1), delta = round(delta, 1))
 
 st.divider()
 
@@ -65,6 +69,31 @@ ax.plot(scores_agg['Week'], scores_agg['Average Score'], label = 'Average', colo
 
 ax.set_xlabel('Week')
 ax.set_ylabel('Scores')
+
+ax.set_title('Scores by Week')
+
+st.pyplot(fig, use_container_width = True)
+
+#Create a plot of average over time
+scores_series.rename({'Score' : 'Series'}, axis = 1, inplace = True)
+scores_games.rename({'Score' : 'Games'}, axis = 1, inplace = True)
+
+avg_df = scores_series.join(scores_games)
+avg_df.reset_index(inplace = True)
+
+avg_df['Total Pins'] = avg_df.expanding(1).sum()['Series']
+avg_df['Total Games'] = avg_df.expanding(1).sum()['Games']
+
+avg_df['League Average'] = avg_df['Total Pins'] / avg_df['Total Games']
+
+fig, ax = plt.subplots()
+
+ax.plot(avg_df['Week'], avg_df['League Average'])
+
+ax.set_xlabel('Week')
+ax.set_ylabel('Average')
+
+ax.set_title('Average by Week')
 
 st.pyplot(fig, use_container_width = True)
 
