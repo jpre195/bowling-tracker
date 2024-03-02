@@ -50,7 +50,7 @@ col1, col2, col3 = st.columns(3)
 
 col1.metric('High Game', max(scores['Score']))
 
-col2.metric('High Series', max(scores.groupby('Week').sum()['Score']))
+col2.metric('High Series', max(scores['Score'].groupby('Week').sum()))
 
 previous_scores = scores[scores.Date < max(scores.Date)]
 delta = scores['Score'].mean() - previous_scores['Score'].mean()
@@ -81,8 +81,8 @@ scores_games.rename({'Score' : 'Games'}, axis = 1, inplace = True)
 avg_df = scores_series.join(scores_games)
 avg_df.reset_index(inplace = True)
 
-avg_df['Total Pins'] = avg_df.expanding(1).sum()['Series']
-avg_df['Total Games'] = avg_df.expanding(1).sum()['Games']
+avg_df['Total Pins'] = avg_df['Series'].expanding(1).sum()
+avg_df['Total Games'] = avg_df['Games'].expanding(1).sum()
 
 avg_df['League Average'] = avg_df['Total Pins'] / avg_df['Total Games']
 
