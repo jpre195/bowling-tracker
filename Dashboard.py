@@ -50,7 +50,7 @@ col1, col2, col3 = st.columns(3)
 
 col1.metric('High Game', max(scores['Score']))
 
-col2.metric('High Series', max(scores['Score'].groupby('Week').sum()))
+col2.metric('High Series', max(scores[['Week', 'Score']].groupby('Week').sum()))
 
 previous_scores = scores[scores.Date < max(scores.Date)]
 delta = scores['Score'].mean() - previous_scores['Score'].mean()
