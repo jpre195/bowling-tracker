@@ -7,11 +7,12 @@ from sqlalchemy import create_engine
 import streamlit as st
 
 #Connect to database
-connection_string = f"mysql+mysqlconnector://{os.environ['PS_USER']}:{os.environ['PS_PASS']}@{os.environ['PS_HOST']}:3306/{os.environ['PS_DATABASE']}"
+# connection_string = f"mysql+mysqlconnector://{os.environ['PS_USER']}:{os.environ['PS_PASS']}@{os.environ['PS_HOST']}:3306/{os.environ['PS_DATABASE']}"
+connection_string = 'sqlite:///bowling.db'
 engine = create_engine(connection_string)
 
 #Query all league scores
-scores = pd.read_sql('select * from bowling.league', engine)
+scores = pd.read_sql('select * from league', engine)
 
 #Add scores and engine to session state
 st.session_state['scores'] = scores
@@ -21,7 +22,7 @@ st.session_state['engine'] = engine
 scores.rename({col : col.capitalize() for col in scores.columns}, axis = 1, inplace = True)
 
 #Cast date column to datetime
-scores['Date'] = pd.to_datetime(scores['Date'])
+# scores['Date'] = pd.to_datetime(scores['Date'])
 
 #Cast score column to integer
 scores['Score'] = [np.nan if pd.isna(score) else int(score) for score in scores['Score']]

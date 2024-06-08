@@ -6,7 +6,8 @@ from sqlalchemy import create_engine
 import streamlit as st
 
 #Connect to database
-connection_string = f"mysql+mysqlconnector://{os.environ['PS_USER']}:{os.environ['PS_PASS']}@{os.environ['PS_HOST']}:3306/{os.environ['PS_DATABASE']}"
+# connection_string = f"mysql+mysqlconnector://{os.environ['PS_USER']}:{os.environ['PS_PASS']}@{os.environ['PS_HOST']}:3306/{os.environ['PS_DATABASE']}"
+connection_string = 'sqlite:///bowling.db'
 engine = create_engine(connection_string)
 
 st.title('Upload Scores')
