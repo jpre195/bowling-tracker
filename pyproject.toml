@@ -1,0 +1,29 @@
+[project]
+name = "bowling-tracker"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=1.4.2",
+    "pandas>=2.3.3",
+    "plotly>=6.4.0",
+    "streamlit>=1.51.0",
+]
+
+[dependency-groups]
+dev = [
+    "commitizen>=4.10.0",
+    "complexipy>=4.2.0",
+    "pytest>=9.0.1",
+    "ruff>=0.14.5",
+    "ty>=0.0.1a26",
+]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version_scheme = "semver"
+version_provider = "uv"
+update_changelog_on_bump = true
+major_version_zero = true
